@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 1072373408}
   - component: {fileID: 1072373407}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: BaseSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,9 +620,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefabs:
-  - {fileID: -1484758577051697960, guid: 158dfa3923a80454aa32e23f7bc18ae1, type: 3}
-  - {fileID: -4896724863820277823, guid: fea6c906bfb99204fa4ef6a4b55527b2, type: 3}
-  - {fileID: 5287932131289570607, guid: c62caa584d2a52f44a4b6712ffc53259, type: 3}
+  - {fileID: 3347727997988716266, guid: 28b257ed7654a7146aff29937b4535a1, type: 3}
+  - {fileID: 949570964688384287, guid: 1764a4fe9fe9ab444854453c16db6498, type: 3}
+  - {fileID: 2373889035742191571, guid: 0f9da9606d0e6394399edb5451c11459, type: 3}
   _spawnDelay: 3
   _radius: 15
 --- !u!1660057539 &9223372036854775807
@@ -631,7 +631,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 705507995}
   - {fileID: 1000092742}
-  - {fileID: 1072373408}
   - {fileID: 2095589560}
   - {fileID: 1832667971}
   - {fileID: 240751967}
+  - {fileID: 1072373408}

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class BaseSpawner : MonoBehaviour
 {
     [SerializeField] private Base _basePrefab;
     [SerializeField] private Miner _minerPrefab;
