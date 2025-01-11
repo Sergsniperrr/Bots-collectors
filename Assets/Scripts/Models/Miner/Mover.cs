@@ -23,11 +23,6 @@ public class Mover : MonoBehaviour
         _target = target;
     }
 
-    public void StopMove()
-    {
-        _target = Vector3.zero;
-    }
-
     private void Move()
     {
         _direction = _target - transform.position;

@@ -37,8 +37,8 @@ public class OreCountView : MonoBehaviour
     {
         string text = _title;
 
-        foreach (string ore in counter.Keys)
-            text += $"{ore} : {counter[ore]}\n";
+        foreach (KeyValuePair<string, int> ore in counter)
+            text += $"{ore.Key} : {ore.Value}\n";
 
         _text.text = text;
     }

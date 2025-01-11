@@ -13,7 +13,6 @@ public class Base : MonoBehaviour, IContainer, IObservable
     public event Action<Transform> CameraInitialized;
 
     public Vector3 Position => transform.position;
-    public void AddToStore(Ore ore) => _store.Add(ore);
 
     private void Awake()
     {
@@ -44,6 +43,8 @@ public class Base : MonoBehaviour, IContainer, IObservable
     {
         _detector.OreDetected -= _minersHandler.CollectOre;
     }
+
+    public void AddToStore(Ore ore) => _store.Add(ore);
 
     public void InitializeData(Miner minerPrefab, Transform camera)
     {
