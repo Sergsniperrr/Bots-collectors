@@ -8,15 +8,15 @@ public static class WaitingPointCreator
             return null;
 
         Vector3[] waitingPoints = new Vector3[pointsCount];
-        float offsetY = 0.87f;
         int doubler = 2;
+        float shift = -0.15f;
 
         for (int i = 0; i < waitingPoints.Length; i++)
         {
             float angle = i * Mathf.PI * doubler / waitingPoints.Length;
             float x = Mathf.Cos(angle) * areaRadius;
             float z = Mathf.Sin(angle) * areaRadius;
-            Vector3 position = centrePosition + new Vector3(x, offsetY, z);
+            Vector3 position = centrePosition + new Vector3(x, shift, z);
             waitingPoints[i] = position;
         }
 

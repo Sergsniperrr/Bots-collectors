@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class OreSpawner : MonoBehaviour
@@ -6,22 +7,26 @@ public class OreSpawner : MonoBehaviour
     [SerializeField] private float _spawnDelay;
     [SerializeField] private float _radius = 15f;
 
-    private float _waitingCounter;
-
     private void Awake()
     {
         if (_prefabs.Length == 0)
             throw new System.ArgumentOutOfRangeException(nameof(_prefabs));
     }
 
-    private void Update()
+    private void Start()
     {
-        _waitingCounter += Time.deltaTime;
+        StartCoroutine(SpawnWithDelay(_spawnDelay));
+    }
 
-        if (_waitingCounter >= _spawnDelay)
+    private IEnumerator SpawnWithDelay(float delay)
+    {
+        var wait = new WaitForSeconds(delay);
+
+        while (enabled)
         {
             Spawn();
-            _waitingCounter = 0f;
+
+            yield return wait;
         }
     }
 

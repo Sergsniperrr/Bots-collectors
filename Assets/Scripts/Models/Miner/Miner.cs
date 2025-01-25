@@ -1,31 +1,38 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Loader))]
+[RequireComponent(typeof(MinerActioner))]
 [RequireComponent(typeof(Router))]
+[RequireComponent(typeof(Builder))]
 public class Miner : MonoBehaviour
 {
-    private Loader _loader;
+    private MinerActioner _loader;
     private Router _router;
+    private Builder _builder;
 
     private IContainer _mainBase;
-    private Ore _target;
-    private Ore _oreInInventory;
 
     public bool IsFree { get; private set; } = true;
 
-    public void SetWaitingPoint(Vector3 point) => _router.SetWaitingPoint(point);
-
     private void Awake()
     {
-        _loader = GetComponent<Loader>();
+        _loader = GetComponent<MinerActioner>();
         _router = GetComponent<Router>();
+        _builder = GetComponent<Builder>();
     }
+
+    private void Start()
+    {
+        transform.rotation = Quaternion.Euler(Vector3.zero);
+    }
+
+    public void SetWaitingPoint(Vector3 point) => _router.SetWaitingPoint(point);
 
     public void SetMainBase(IContainer mainBase)
     {
         _mainBase = mainBase ?? throw new ArgumentNullException(nameof(mainBase));
         _router.SetBasePosition(mainBase.Position);
+        _loader.SetStore(_mainBase);
     }
 
     public void Collect(Ore ore)
@@ -35,44 +42,37 @@ public class Miner : MonoBehaviour
 
         IsFree = false;
 
-        _router.GoToOre(ore.transform.position);
+        _router.GoToOre(ore);
+        _router.TransferFinished += Release;
+    }
 
-        _router.ArrivedToOre += PickUp;
+    public void GoToNewBase(PreBase preBase, IColonizable newBase)
+    {
+        _builder.BuildNewBase(preBase, newBase);
+
+        _builder.BuildCompleted += JoinToNewBase;
+    }
+
+    private void JoinToNewBase(IColonizable newBase)
+    {
+        _builder.BuildCompleted -= JoinToNewBase;
+
+        newBase.AddMiner(this);
     }
 
     private void SetTarget(Ore ore)
     {
         if (IsFree)
         {
-            _target = ore != null ? ore : throw new ArgumentNullException(nameof(ore));
-
             ore.Disable();
             IsFree = false;
         }
     }
 
-    private void PickUp()
+    private void Release()
     {
-        _router.ArrivedToOre -= PickUp;
+        _router.TransferFinished -= Release;
 
-        _loader.PickUp(_target);
-        _oreInInventory = _target;
-
-        _router.GoToUploadPoint();
-
-        _router.ArrivedToUploadPoint += UploadOre;
-    }
-
-    private void UploadOre()
-    {
-        _router.ArrivedToUploadPoint -= UploadOre;
-
-        _loader.Upload(_oreInInventory, _mainBase);
-
-        _oreInInventory = null;
-        _target = null;
         IsFree = true;
-
-        _router.GoToWaitingPoint();
     }
 }

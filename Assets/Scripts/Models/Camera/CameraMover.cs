@@ -4,7 +4,7 @@ public class CameraMover : MonoBehaviour
 {
     [SerializeField] private float _speed = 15f;
 
-    private readonly PlayerInput _input = new();
+    private readonly PlayerKeyInput _input = new();
 
     private Vector3 _direction = Vector3.zero;
     private Vector3 _rotation = Vector3.zero;

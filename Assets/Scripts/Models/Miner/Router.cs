@@ -2,62 +2,106 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Mover))]
+[RequireComponent(typeof(MinerActioner))]
+[RequireComponent(typeof(MinerAnimator))]
 public class Router : MonoBehaviour
 {
     private Mover _mover;
+    private MinerActioner _actioner;
+    private MinerAnimator _animator;
     private Vector3 _basePosition;
     private Vector3 _waitingPoint;
+    private Ore _ore;
 
-    public event Action ArrivedToOre;
-    public event Action ArrivedToUploadPoint;
+    public event Action TransferFinished;
+    public event Action ArrivedToBuildPoint;
 
     public void SetBasePosition(Vector3 position) => _basePosition = position;
 
     private void Awake()
     {
         _mover = GetComponent<Mover>();
+        _actioner = GetComponent<MinerActioner>();
+        _animator = GetComponent<MinerAnimator>();
     }
     public void SetWaitingPoint(Vector3 position)
     {
         _waitingPoint = position;
 
-        _mover.StartMoveTo(_waitingPoint);
+        GoToWaitingPoint();
     }
 
-    public void GoToOre(Vector3 position)
+    public void GoToOre(Ore ore)
     {
-        _mover.StartMoveTo(position);
+        _ore = ore != null ? ore : throw new ArgumentNullException(nameof(ore));
 
-        _mover.ArrivedAtPoint += FinishMoveToOre;
+        _mover.ArrivedAtPoint -= FinishTransfer;
+
+        _mover.StartMove(ore.transform.position);
+        _animator.Move();
+
+        _mover.ArrivedAtPoint += PickUpOre;
     }
 
-    public void GoToUploadPoint()
+    private void PickUpOre()
     {
-        float indentForUpload = 1.8f;
+        _mover.ArrivedAtPoint -= PickUpOre;
+        _actioner.PickUp(_ore);
+        _animator.PickUpOre();
+    }
+
+    public void GoToUploadPoint() // »—œŒÀ‹«”≈“—ﬂ ¿Õ»Ã¿“Œ–ŒÃ!
+    {
+        float indentForUpload = 1.2f;
         var direction = (_basePosition - transform.position).normalized;
-        var point = _basePosition - direction*indentForUpload;
+        var point = _basePosition - direction * indentForUpload;
 
-        _mover.ArrivedAtPoint -= FinishMoveToOre;
+        _mover.StartMove(point, true);
 
-        _mover.StartMoveTo(point);
-
-        _mover.ArrivedAtPoint += FinishMoveToUploadPoint;
+        _mover.ArrivedAtPoint += UnloadOre;
     }
 
-    public void GoToWaitingPoint()
+    private void UnloadOre()
     {
-        _mover.ArrivedAtPoint -= FinishMoveToUploadPoint;
+        _mover.ArrivedAtPoint -= UnloadOre;
 
-        _mover.StartMoveTo(_waitingPoint);
+        _actioner.UnloadOre();
+        _animator.PutOre();
     }
 
-    private void FinishMoveToOre()
+    public void GoToWaitingPoint() // »—œŒÀ‹«”≈“—ﬂ ¿Õ»Ã¿“Œ–ŒÃ!
     {
-        ArrivedToOre?.Invoke();
+        _mover.StartMove(_waitingPoint);
+        _animator.Move();
+
+        TransferFinished?.Invoke();
+
+        _mover.ArrivedAtPoint += FinishTransfer;
     }
 
-    private void FinishMoveToUploadPoint()
+    public void GoToPointOfBuild(Vector3 pointOfBuild)
     {
-        ArrivedToUploadPoint?.Invoke();
+        float indentFromNewBase = 1.2f;
+        var direction = (pointOfBuild - transform.position).normalized;
+        var point = pointOfBuild - direction * indentFromNewBase;
+
+        _mover.StartMove(point, true);
+
+        _mover.ArrivedAtPoint += BuildBase;
+    }
+
+    private void FinishTransfer()
+    {
+        _mover.ArrivedAtPoint -= FinishTransfer;
+        _animator.Wait();
+    }
+
+    private void BuildBase()
+    {
+        _mover.ArrivedAtPoint -= BuildBase;
+        ArrivedToBuildPoint?.Invoke();
+
+        _animator.Build();
+        _actioner.Build();
     }
 }

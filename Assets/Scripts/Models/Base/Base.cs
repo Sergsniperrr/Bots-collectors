@@ -2,13 +2,16 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(OreDetector))]
-public class Base : MonoBehaviour, IContainer, IObservable
+public class Base : MonoBehaviour, IContainer, IObservable, IColonizable
 {
-    [SerializeField] private int _initialMinersCount = 3;
+    [field: SerializeField] public float DurationOfBuild { get; private set; }
 
     private MinersHandler _minersHandler;
     private Store _store;
     private OreDetector _detector;
+    private WorkingAreaView _workingArea;
+    private Canvas _textCanvas;
+    private Vector3 _position = Vector3.zero;
 
     public event Action<Transform> CameraInitialized;
 
@@ -20,18 +23,20 @@ public class Base : MonoBehaviour, IContainer, IObservable
 
         _minersHandler = transform.GetComponentInChildren<MinersHandler>();
         _store = transform.GetComponentInChildren<Store>();
+        _workingArea = transform.GetComponentInChildren<WorkingAreaView>();
+        _textCanvas = transform.GetComponentInChildren<Canvas>();
 
         if (_minersHandler == null)
             throw new NullReferenceException(nameof(_minersHandler));
 
         if (_store == null)
             throw new NullReferenceException(nameof(_store));
-    }
 
-    private void Start()
-    {
-        for (int i = 0; i < _initialMinersCount; i++)
-            _minersHandler.CreateMiner();
+        if (_workingArea == null)
+            throw new NullReferenceException(nameof(_workingArea));
+
+        if (_textCanvas == null)
+            throw new NullReferenceException(nameof(_textCanvas));
     }
 
     private void OnEnable()
@@ -44,9 +49,7 @@ public class Base : MonoBehaviour, IContainer, IObservable
         _detector.OreDetected -= _minersHandler.CollectOre;
     }
 
-    public void AddToStore(Ore ore) => _store.Add(ore);
-
-    public void InitializeData(Miner minerPrefab, Transform camera)
+    public void InitializeData(Miner minerPrefab, Transform camera, Buyer buyer, int initialMinersCount = 0)
     {
         if (minerPrefab == null)
             throw new ArgumentNullException(nameof(minerPrefab));
@@ -54,7 +57,38 @@ public class Base : MonoBehaviour, IContainer, IObservable
         if (camera == null)
             throw new ArgumentNullException(nameof(camera));
 
-        _minersHandler.InitializeData(minerPrefab, this);
+        if (buyer == null)
+            throw new ArgumentNullException(nameof(buyer));
+
+        if (initialMinersCount < 0)
+            throw new ArgumentOutOfRangeException(nameof(initialMinersCount));
+
+        _minersHandler.InitializeData(minerPrefab, this, buyer);
         CameraInitialized.Invoke(camera);
+
+        for (int i = 0; i < initialMinersCount; i++)
+            _minersHandler.CreateMiner();
+    }
+
+    public void AddToStore(Ore ore) => _store.Add(ore);
+    public void ShowArea() => _workingArea.Show();
+    public void HideArea() => _workingArea.Hide();
+    public void AddMiner(Miner miner) => _minersHandler.AddMiner(miner);
+
+    public void Enable()
+    {
+        _textCanvas.enabled = true;
+        _detector.StartScan();
+    }
+
+    public void CreateColonist(PreBase preBase, IColonizable newBase)
+    {
+        _minersHandler.CreateColonist(preBase, newBase);
+    }
+
+    public void IncreasePositionY(float value)
+    {
+        _position.y = value;
+        transform.position += _position;
     }
 }

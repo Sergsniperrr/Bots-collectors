@@ -1,23 +1,33 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class OreDetector : MonoBehaviour
 {
-    [SerializeField] private float _radius = 15f;
+    [SerializeField] private float _radius = 10f;
 
+    private Coroutine _coroutine;
     private float _searchDelay = 0.5f;
-    private float _waitSearchCounter;
 
     public event Action<Ore> OreDetected;
 
-    private void Update()
+    public void StartScan()
     {
-        _waitSearchCounter += Time.deltaTime;
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
 
-        if (_waitSearchCounter >= _searchDelay)
+        _coroutine = StartCoroutine(ScanWithDelay(_searchDelay));
+    }
+
+    private IEnumerator ScanWithDelay(float delay)
+    {
+        var wait = new WaitForSeconds(delay);
+
+        while (enabled)
         {
             Scan();
-            _waitSearchCounter = 0f;
+
+            yield return wait;
         }
     }
 

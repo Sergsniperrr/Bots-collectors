@@ -2,35 +2,63 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MinerSearcher))]
 public class MinersHandler : MonoBehaviour
 {
     [SerializeField] private float _areaRadius = 4f;
 
+    private readonly int _minMinersCount = 2;
+
     private List<Miner> _miners = new();
-    private Miner _minerPrefab;
     private IContainer _mainBase;
     private Miner _freeMiner;
+    private MinerSpawner _spawner;
 
-    public void InitializeData(Miner prefab, IContainer mainBase)
+    private void Awake()
     {
-        _minerPrefab = prefab != null ? prefab : throw new ArgumentNullException(nameof(prefab));
+        _spawner = transform.parent.GetComponentInChildren<MinerSpawner>();
+
+        if (_spawner == null)
+            throw new NullReferenceException(nameof(_spawner));
+    }
+
+    private void OnEnable()
+    {
+        _spawner.MinerBeenCreated += AddMiner;
+    }
+
+    private void OnDisable()
+    {
+        _spawner.MinerBeenCreated -= AddMiner;
+    }
+
+    public void InitializeData(Miner prefab, IContainer mainBase, Buyer buyer)
+    {
         _mainBase = mainBase ?? throw new ArgumentNullException(nameof(mainBase));
+
+        _spawner.InitializeData(buyer, prefab);
+    }
+
+    public void CreateColonist(PreBase preBase, IColonizable newBase)
+    {
+        if (_miners.Count >= _minMinersCount)
+            _spawner.StartCreatingColonist(preBase, newBase);
     }
 
     public void CreateMiner()
     {
-        if (_minerPrefab == null)
-            throw new NullReferenceException(nameof(_minerPrefab));
+        _spawner.FreeCreateMiner();
+    }
 
-        int newCount = _miners.Count + 1;
-        Vector3[] waitingPoints = WaitingPointCreator.Create(transform.position, newCount, _areaRadius);
+    public void AddMiner(Miner miner)
+    {
+        if (miner == null)
+            return;
 
-        _miners.Add(Instantiate(_minerPrefab, waitingPoints[^1], _minerPrefab.transform.rotation));
-        _miners[^1].transform.SetParent(transform);
-        _miners[^1].SetMainBase(_mainBase);
+        miner.transform.SetParent(transform);
+        miner.SetMainBase(_mainBase);
+        _miners.Add(miner);
 
-        UpdateWaitingPoints();
+        UpdateWaitingPoints(WaitingPointCreator.Create(transform.position, _miners.Count, _areaRadius));
     }
 
     public void CollectOre(Ore ore)
@@ -41,14 +69,12 @@ public class MinersHandler : MonoBehaviour
             _freeMiner.Collect(ore);
     }
 
-    private void UpdateWaitingPoints()
+    private void UpdateWaitingPoints(Vector3[] points)
     {
         if (_miners.Count == 0)
             return;
 
-        Vector3[] waitingPoints = WaitingPointCreator.Create(transform.position, _miners.Count, _areaRadius);
-
         for (int i = 0; i < _miners.Count; i++)
-            _miners[i].SetWaitingPoint(waitingPoints[i]);
+            _miners[i].SetWaitingPoint(points[i]);
     }
 }

@@ -8,6 +8,7 @@ public class OreCountView : MonoBehaviour
 
     private IOreCounter _counter;
     private Text _text;
+    private string _empty;
 
     private void Awake()
     {
@@ -20,22 +21,29 @@ public class OreCountView : MonoBehaviour
         if (_text == null)
             throw new MissingComponentException(nameof(Text));
 
-        _text.text = $"{_title}   пусто";
+        _empty = $"{_title}   пусто";
+
+        _text.text = _empty;
     }
 
     private void OnEnable()
     {
-        _counter.OreAdded += ChangeText;
+        _counter.OreCountChanged += ChangeText;
     }
 
     private void OnDisable()
     {
-        _counter.OreAdded -= ChangeText;
+        _counter.OreCountChanged -= ChangeText;
     }
 
     private void ChangeText(Dictionary<string, int> counter)
     {
         string text = _title;
+
+        if (counter.Count == 0)
+            _text.text = _empty;
+        else
+            _text.text = _title;
 
         foreach (KeyValuePair<string, int> ore in counter)
             text += $"{ore.Key} : {ore.Value}\n";

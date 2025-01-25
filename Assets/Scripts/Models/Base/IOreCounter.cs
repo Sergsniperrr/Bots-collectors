@@ -3,5 +3,5 @@ using System.Collections.Generic;
 
 public interface IOreCounter
 {
-    event Action<Dictionary<string, int>> OreAdded;
+    event Action<Dictionary<string, int>> OreCountChanged;
 }
