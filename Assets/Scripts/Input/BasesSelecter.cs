@@ -10,6 +10,7 @@ public class BasesSelecter : MonoBehaviour
     private Base _baseBuffer;
 
     public event Action<Base> ActiveBaseChanged;
+    public event Action Unselect;
 
     private void Update()
     {
@@ -47,5 +48,7 @@ public class BasesSelecter : MonoBehaviour
 
         _baseBuffer.HideArea();
         _baseBuffer = null;
+
+        Unselect?.Invoke();
     }
 }

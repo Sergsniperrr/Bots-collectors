@@ -31,11 +31,11 @@ public class MinersHandler : MonoBehaviour
         _spawner.MinerBeenCreated -= AddMiner;
     }
 
-    public void InitializeData(Miner prefab, IContainer mainBase, Buyer buyer)
+    public void InitializeData(Miner prefab, IContainer mainBase)
     {
         _mainBase = mainBase ?? throw new ArgumentNullException(nameof(mainBase));
 
-        _spawner.InitializeData(buyer, prefab);
+        _spawner.InitializeData(prefab);
     }
 
     public void CreateColonist(PreBase preBase, IColonizable newBase)

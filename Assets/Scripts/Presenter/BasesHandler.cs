@@ -11,16 +11,17 @@ public class BasesHandler : MonoBehaviour
 
     private Base _activeBase;
     private BaseDemo _baseDemo;
-    private Vector3 _newBaseCoordinate;
 
     private void OnEnable()
     {
         _selecter.ActiveBaseChanged += GetActiveBase;
+        _selecter.Unselect += Unselect;
     }
 
     private void OnDisable()
     {
         _selecter.ActiveBaseChanged -= GetActiveBase;
+        _selecter.Unselect -= Unselect;
     }
 
     private void Update()
@@ -34,21 +35,27 @@ public class BasesHandler : MonoBehaviour
         _baseDemo.transform.position = _input.OnMouseMove();
 
         if (_input.OnRightClick())
-            BuildBase(_baseDemo.transform.position);
-
+        {
+            _spawner.BuildBase(_activeBase, _baseDemo.transform.position);
+            Destroy(_baseDemo.gameObject);
+        }
     }
 
     public void BuildBase(Vector3 position) => _spawner.CreateBase(position);
 
     private void GetActiveBase(Base activeBase)
     {
-        if (activeBase == null)
-            if (_baseDemo != null)
-                Destroy(_baseDemo.gameObject);
-        else
-            if (_baseDemo == null)
-                _baseDemo = Instantiate(_baseDemoPrefab, _input.OnMouseMove(), Quaternion.identity);
+        if (_baseDemo == null && activeBase != null)
+            _baseDemo = Instantiate(_baseDemoPrefab, _input.OnMouseMove(), Quaternion.identity);
 
         _activeBase = activeBase;
+    }
+
+    private void Unselect()
+    {
+        _activeBase = null;
+
+        if (_baseDemo != null)
+            Destroy(_baseDemo.gameObject);
     }
 }

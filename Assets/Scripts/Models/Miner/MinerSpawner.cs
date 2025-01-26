@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Buyer))]
 public class MinerSpawner : MonoBehaviour
 {
     private Miner _minerPrefab;
@@ -9,6 +10,7 @@ public class MinerSpawner : MonoBehaviour
     private Buyer _buyer;
     private Store _store;
     private IColonizable _newBase;
+    private Vector3 _spawnPosition = new(0f, 0f, 0f);
 
     public event Action<Miner> MinerBeenCreated;
 
@@ -16,10 +18,7 @@ public class MinerSpawner : MonoBehaviour
 
     private void Awake()
     {
-        _store = transform.parent.GetComponentInChildren<Store>();
-
-        if (_store == null)
-            throw new NullReferenceException(nameof(_store));
+        InitializeData();
     }
 
     private void OnEnable()
@@ -32,15 +31,14 @@ public class MinerSpawner : MonoBehaviour
         _store.OreCountChanged -= Create;
     }
 
-    public void InitializeData(Buyer buyer, Miner prefab)
+    public void InitializeData(Miner prefab)
     {
-        _buyer = buyer != null ? buyer : throw new ArgumentNullException(nameof(buyer));
         _minerPrefab = prefab != null ? prefab : throw new ArgumentNullException(nameof(prefab));
     }
 
     public void FreeCreateMiner()
     {
-        Miner miner = Instantiate(_minerPrefab, Vector3.zero, transform.rotation);
+        Miner miner = Instantiate(_minerPrefab, _spawnPosition, transform.rotation);
 
         MinerBeenCreated?.Invoke(miner);
     }
@@ -70,7 +68,7 @@ public class MinerSpawner : MonoBehaviour
         if (_buyer.BuyColonist(_store) == false)
             return;
 
-        Miner colonist = Instantiate(_minerPrefab, Vector3.zero, transform.rotation);
+        Miner colonist = Instantiate(_minerPrefab, _spawnPosition, transform.rotation);
 
         IsColonistCreation = false;
 
@@ -83,5 +81,14 @@ public class MinerSpawner : MonoBehaviour
             CreateColonist(_preBase, _newBase);
         else
             CreateMiner();
+    }
+
+    private void InitializeData()
+    {
+        _buyer = GetComponent<Buyer>();
+        _store = transform.parent.GetComponentInChildren<Store>();
+
+        if (_store == null)
+            throw new NullReferenceException(nameof(_store));
     }
 }

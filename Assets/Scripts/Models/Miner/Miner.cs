@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(MinerActioner))]
+[RequireComponent(typeof(Loader))]
 [RequireComponent(typeof(Router))]
 [RequireComponent(typeof(Builder))]
 public class Miner : MonoBehaviour
 {
-    private MinerActioner _loader;
+    private Loader _loader;
     private Router _router;
     private Builder _builder;
 
@@ -16,7 +16,7 @@ public class Miner : MonoBehaviour
 
     private void Awake()
     {
-        _loader = GetComponent<MinerActioner>();
+        _loader = GetComponent<Loader>();
         _router = GetComponent<Router>();
         _builder = GetComponent<Builder>();
     }
@@ -40,6 +40,9 @@ public class Miner : MonoBehaviour
         SetTarget(ore);
         ore.Disable();
 
+        if (ore.TryGetComponent(out Collider collider))
+            Destroy(collider);
+
         IsFree = false;
 
         _router.GoToOre(ore);
@@ -58,6 +61,7 @@ public class Miner : MonoBehaviour
         _builder.BuildCompleted -= JoinToNewBase;
 
         newBase.AddMiner(this);
+        newBase.Enable();
     }
 
     private void SetTarget(Ore ore)

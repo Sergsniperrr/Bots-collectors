@@ -38,12 +38,12 @@ public class OreCountView : MonoBehaviour
 
     private void ChangeText(Dictionary<string, int> counter)
     {
-        string text = _title;
+        string text;
 
         if (counter.Count == 0)
-            _text.text = _empty;
+            text = _empty;
         else
-            _text.text = _title;
+            text = _title;
 
         foreach (KeyValuePair<string, int> ore in counter)
             text += $"{ore.Key} : {ore.Value}\n";

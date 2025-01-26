@@ -7,7 +7,7 @@ public class BaseSpawner : MonoBehaviour
     [SerializeField] private Miner _minerPrefab;
     [SerializeField] private Transform _camera;
     [SerializeField] private PreBase _preBasePrefab;
-    [SerializeField] private Buyer _buyer;
+    //[SerializeField] private Buyer _buyer;
     [SerializeField] private int _initialNumberOfMinersAtFirstBase;
 
     private readonly float _zeroPositionY = 0.15f;
@@ -31,7 +31,7 @@ public class BaseSpawner : MonoBehaviour
         Base baseClone = Instantiate(_basePrefab, position, transform.rotation);
 
         baseClone.transform.SetParent(transform);
-        baseClone.InitializeData(_minerPrefab, _camera, _buyer, initialMinersCount);
+        baseClone.InitializeData(_minerPrefab, _camera, initialMinersCount);
 
         if (isActive)
             baseClone.Enable();

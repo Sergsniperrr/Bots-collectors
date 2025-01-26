@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3858401557280762328}
   - component: {fileID: 7159260752632848327}
   - component: {fileID: 7532881577898516566}
+  - component: {fileID: 5504256721926147185}
   m_Layer: 0
   m_Name: Miners
   m_TagString: Untagged
@@ -58,6 +59,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c72051eb4c65d47a5b09ec7af63ad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5504256721926147185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715098628866087806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eda9bd05aba9b7c40b80bd3b7fae7eb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseInitialPrice:
+  - "\u0410\u043B\u043C\u0430\u0437\u044B"
+  - "\u0410\u043B\u043C\u0430\u0437\u044B"
+  - "\u0410\u043B\u043C\u0430\u0437\u044B"
+  - "\u0410\u043B\u043C\u0430\u0437\u044B"
+  - "\u0417\u043E\u043B\u043E\u0442\u043E"
+  _minerInitialPrice:
+  - "\u0416\u0435\u043B\u0435\u0437\u043E"
+  - "\u0416\u0435\u043B\u0435\u0437\u043E"
+  - "\u0417\u043E\u043B\u043E\u0442\u043E"
 --- !u!1 &1182391730594278209
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,8 +301,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7832237058542321131}
-  - component: {fileID: 447007415553200964}
   - component: {fileID: 3009479004717506051}
+  - component: {fileID: 447007415553200964}
   m_Layer: 0
   m_Name: Warehouse
   m_TagString: Untagged
@@ -302,18 +325,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8863356302465284103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &447007415553200964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2600446588654001166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1048d78b383254e46a5fc854a560af4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3009479004717506051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,6 +335,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f4e9a349007d0b4e967723605d47baa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &447007415553200964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2600446588654001166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1048d78b383254e46a5fc854a560af4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3326001728836783448

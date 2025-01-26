@@ -2,12 +2,12 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Mover))]
-[RequireComponent(typeof(MinerActioner))]
+[RequireComponent(typeof(Loader))]
 [RequireComponent(typeof(MinerAnimator))]
 public class Router : MonoBehaviour
 {
     private Mover _mover;
-    private MinerActioner _actioner;
+    private Loader _loader;
     private MinerAnimator _animator;
     private Vector3 _basePosition;
     private Vector3 _waitingPoint;
@@ -21,7 +21,7 @@ public class Router : MonoBehaviour
     private void Awake()
     {
         _mover = GetComponent<Mover>();
-        _actioner = GetComponent<MinerActioner>();
+        _loader = GetComponent<Loader>();
         _animator = GetComponent<MinerAnimator>();
     }
     public void SetWaitingPoint(Vector3 position)
@@ -46,7 +46,8 @@ public class Router : MonoBehaviour
     private void PickUpOre()
     {
         _mover.ArrivedAtPoint -= PickUpOre;
-        _actioner.PickUp(_ore);
+        _loader.ActionCompleted += GoToUploadPoint;
+        _loader.PickUp(_ore);
         _animator.PickUpOre();
     }
 
@@ -56,17 +57,26 @@ public class Router : MonoBehaviour
         var direction = (_basePosition - transform.position).normalized;
         var point = _basePosition - direction * indentForUpload;
 
+        _loader.ActionCompleted -= GoToUploadPoint;
+
         _mover.StartMove(point, true);
 
-        _mover.ArrivedAtPoint += UnloadOre;
+        _mover.ArrivedAtPoint += StartUnloadOre;
     }
 
-    private void UnloadOre()
+    private void StartUnloadOre()
     {
-        _mover.ArrivedAtPoint -= UnloadOre;
+        _mover.ArrivedAtPoint -= StartUnloadOre;
+        _loader.ActionCompleted += FinishUnload;
 
-        _actioner.UnloadOre();
+        _loader.UnloadOre();
         _animator.PutOre();
+    }
+
+    private void FinishUnload()
+    {
+        _loader.ActionCompleted -= FinishUnload;
+        GoToWaitingPoint();
     }
 
     public void GoToWaitingPoint() // »—œŒÀ‹«”≈“—ﬂ ¿Õ»Ã¿“Œ–ŒÃ!
@@ -86,6 +96,7 @@ public class Router : MonoBehaviour
         var point = pointOfBuild - direction * indentFromNewBase;
 
         _mover.StartMove(point, true);
+        _animator.Move();
 
         _mover.ArrivedAtPoint += BuildBase;
     }
@@ -102,6 +113,5 @@ public class Router : MonoBehaviour
         ArrivedToBuildPoint?.Invoke();
 
         _animator.Build();
-        _actioner.Build();
     }
 }

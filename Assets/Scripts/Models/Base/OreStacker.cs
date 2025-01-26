@@ -11,8 +11,6 @@ public class OreStacker : MonoBehaviour
     private readonly int _maxCountByX = 4;
     private readonly int _maxCountByZ = 4;
 
-    private int _indexCounter;
-
     public Vector3 CalculatePosition(int placeIndex)
     {
         Vector3 newPosition = _initialPosition;
@@ -33,7 +31,7 @@ public class OreStacker : MonoBehaviour
     {
         _ores.Add(ore);
         ore.transform.rotation = Quaternion.Euler(Vector3.zero);
-        ore.transform.localPosition = CalculatePosition(_indexCounter++);
+        ore.transform.localPosition = CalculatePosition(_ores.Count - 1);
     }
 
     public void Remove(KeyValuePair<string, int> removableOre)
@@ -46,6 +44,8 @@ public class OreStacker : MonoBehaviour
 
             Destroy(oresOfRequiredType[i].gameObject);
         }
+
+        UpdateOresPositions();
     }
 
     public void UpdateOresPositions()

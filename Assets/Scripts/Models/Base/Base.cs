@@ -49,7 +49,7 @@ public class Base : MonoBehaviour, IContainer, IObservable, IColonizable
         _detector.OreDetected -= _minersHandler.CollectOre;
     }
 
-    public void InitializeData(Miner minerPrefab, Transform camera, Buyer buyer, int initialMinersCount = 0)
+    public void InitializeData(Miner minerPrefab, Transform camera, int initialMinersCount = 0)
     {
         if (minerPrefab == null)
             throw new ArgumentNullException(nameof(minerPrefab));
@@ -57,13 +57,10 @@ public class Base : MonoBehaviour, IContainer, IObservable, IColonizable
         if (camera == null)
             throw new ArgumentNullException(nameof(camera));
 
-        if (buyer == null)
-            throw new ArgumentNullException(nameof(buyer));
-
         if (initialMinersCount < 0)
             throw new ArgumentOutOfRangeException(nameof(initialMinersCount));
 
-        _minersHandler.InitializeData(minerPrefab, this, buyer);
+        _minersHandler.InitializeData(minerPrefab, this);
         CameraInitialized.Invoke(camera);
 
         for (int i = 0; i < initialMinersCount; i++)
@@ -86,9 +83,10 @@ public class Base : MonoBehaviour, IContainer, IObservable, IColonizable
         _minersHandler.CreateColonist(preBase, newBase);
     }
 
-    public void IncreasePositionY(float value)
+    public void SetPositionY(float value)
     {
+        _position = transform.position;
         _position.y = value;
-        transform.position += _position;
+        transform.position = _position;
     }
 }

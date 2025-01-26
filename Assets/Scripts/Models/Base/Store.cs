@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(OreStacker))]
 public class Store : MonoBehaviour, IOreCounter
@@ -17,17 +18,6 @@ public class Store : MonoBehaviour, IOreCounter
     private void Awake()
     {
         _stacker = GetComponent<OreStacker>();
-    }
-
-    public void Add(Ore ore)
-    {
-        ore.transform.SetParent(transform);
-
-        if (ore.gameObject.TryGetComponent(out Collider collider))
-            Destroy(collider);
-
-        _stacker.Put(ore);
-        IncrementCounter(ore);
     }
 
     public bool CheckOresForEnough(Dictionary<string, int> requireOres)
@@ -47,6 +37,16 @@ public class Store : MonoBehaviour, IOreCounter
         return true;
     }
 
+    public void Add(Ore ore)
+    {
+        ore.transform.SetParent(transform);
+
+        _stacker.Put(ore);
+        IncrementCounter(ore);
+
+        OreCountChanged?.Invoke(_oresCounter);
+    }
+
     public void RemoveOres(Dictionary<string, int> requireOres)
     {
         if (CheckOresForEnough(requireOres) == false)
@@ -58,7 +58,7 @@ public class Store : MonoBehaviour, IOreCounter
             _stacker.Remove(ore);
         }
 
-        _stacker.UpdateOresPositions();
+        OreCountChanged?.Invoke(_oresCounter);
     }
 
     private void IncrementCounter(Ore ore)
@@ -67,8 +67,6 @@ public class Store : MonoBehaviour, IOreCounter
             _oresCounter[ore.Name] += MinCount;
         else
             _oresCounter.Add(ore.Name, MinCount);
-
-        OreCountChanged?.Invoke(new Dictionary<string, int>(_oresCounter));
     }
 
     private void DecrementCounter(KeyValuePair<string, int> ore)
@@ -77,7 +75,5 @@ public class Store : MonoBehaviour, IOreCounter
 
         if (_oresCounter[ore.Key] == 0)
             _oresCounter.Remove(ore.Key);
-
-        OreCountChanged?.Invoke(new Dictionary<string, int>(_oresCounter));
     }
 }
